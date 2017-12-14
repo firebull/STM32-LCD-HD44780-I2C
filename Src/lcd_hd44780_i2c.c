@@ -38,7 +38,7 @@
 #include "task.h"
 #include "lcd_hd44780_i2c.h"
 
-uint8_t lcdCommandBuffer[8] = {0x00};
+uint8_t lcdCommandBuffer[6] = {0x00};
 
 static LCDParams lcdParams;
 
@@ -361,19 +361,18 @@ bool lcdLoadCustomChar(uint8_t cell, uint8_t * charMap) {
  */
 static bool lcdWriteByte(uint8_t rsRwBits, uint8_t * data) {
 
-    lcdCommandBuffer[0] = rsRwBits | LCD_BIT_E | lcdParams.backlight | (*data & 0xF0);
-    lcdCommandBuffer[1] = lcdCommandBuffer[0];
-    lcdCommandBuffer[2] = rsRwBits | lcdParams.backlight | (*data & 0xF0);
+    /* Higher 4 bits*/
+    lcdCommandBuffer[0] = rsRwBits | LCD_BIT_E | lcdParams.backlight | (*data & 0xF0);  // Send data and set strobe
+    lcdCommandBuffer[1] = lcdCommandBuffer[0];                                          // Strobe turned on
+    lcdCommandBuffer[2] = rsRwBits | lcdParams.backlight | (*data & 0xF0);              // Turning strobe off
 
-    lcdCommandBuffer[3] = lcdCommandBuffer[2];
+    /* Lower 4 bits*/
+    lcdCommandBuffer[3] = rsRwBits | LCD_BIT_E | lcdParams.backlight | ((*data << 4) & 0xF0);  // Send data and set strobe
+    lcdCommandBuffer[4] = lcdCommandBuffer[3];                                                 // Strobe turned on
+    lcdCommandBuffer[5] = rsRwBits | lcdParams.backlight | ((*data << 4) & 0xF0);              // Turning strobe off
 
-    lcdCommandBuffer[4] = rsRwBits | LCD_BIT_E | lcdParams.backlight | ((*data << 4) & 0xF0);
-    lcdCommandBuffer[5] = lcdCommandBuffer[4];
-    lcdCommandBuffer[6] = rsRwBits | lcdParams.backlight | ((*data << 4) & 0xF0);
 
-    lcdCommandBuffer[7] = lcdCommandBuffer[6];
-
-    if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 8) != HAL_OK) {
+    if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 6) != HAL_OK) {
         return false;
     }
 
