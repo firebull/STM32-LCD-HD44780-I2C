@@ -50,23 +50,31 @@ extern "C" {
 #define LCD_BIT_SETDDRAMADDR   (uint8_t)0x80
 
 #define LCD_BIT_DISPLAY_CONTROL    (uint8_t)0x08
-#define LCD_BIT_DISPLAY_ON         LCD_BIT_DISPLAY_CONTROL | 0x04
-#define LCD_BIT_CURSOR_ON          LCD_BIT_DISPLAY_CONTROL | 0x02
-#define LCD_BIT_CURSOR_OFF         LCD_BIT_DISPLAY_CONTROL
-#define LCD_BIT_BLINK_ON           LCD_BIT_DISPLAY_CONTROL | 0x01
-#define LCD_BIT_BLINK_OFF          LCD_BIT_DISPLAY_CONTROL
+#define LCD_BIT_DISPLAY_ON         (uint8_t)0x04
+#define LCD_BIT_CURSOR_ON          (uint8_t)0x02
+#define LCD_BIT_CURSOR_OFF         (uint8_t)0x00
+#define LCD_BIT_BLINK_ON           (uint8_t)0x01
+#define LCD_BIT_BLINK_OFF          (uint8_t)0x00
 
 #define LCD_BIT_DISP_CLEAR         (uint8_t)0x01
 #define LCD_BIT_CURSOR_HOME        (uint8_t)0x02
 
 #define LCD_BIT_ENTRY_MODE         (uint8_t)0x04
-#define LCD_BIT_CURSOR_DIR_RIGHT   LCD_BIT_ENTRY_MODE | 0x02
-#define LCD_BIT_CURSOR_DIR_LEFT    LCD_BIT_ENTRY_MODE
-#define LCD_BIT_DISPLAY_SHIFT      LCD_BIT_ENTRY_MODE | 0x01
+#define LCD_BIT_CURSOR_DIR_RIGHT   (uint8_t)0x02
+#define LCD_BIT_CURSOR_DIR_LEFT    (uint8_t)0x00
+#define LCD_BIT_DISPLAY_SHIFT      (uint8_t)0x01
+
+// TODO: Update commands with this defines
+#define LCD_BIT_CURSOR_SHIFT_MODE  (uint8_t)0x10
+#define LCD_BIT_CURSOR_DISP_SHIFT  (uint8_t)0x08
+#define LCD_BIT_CURSOR_MOVE        (uint8_t)0x00
+#define LCD_BIT_CURSOR_SHIFT_DIR_R (uint8_t)0x40
+#define LCD_BIT_CURSOR_SHIFT_DIR_L (uint8_t)0x00
+
 
 /* Function defines */
 #define lcdBacklightOn()           lcdBacklight(LCD_BIT_BACKIGHT_ON)
-#define lcdBacklightOff()          lcdBacklight(0x00)
+#define lcdBacklightOff()          lcdBacklight(LCD_BIT_BACKIGHT_OFF)
 #define lcdAutoscrollOn()          lcdCommand(LCD_DISPLAY_SHIFT, LCD_PARAM_SET)
 #define lcdAutoscrollOff()         lcdCommand(LCD_DISPLAY_SHIFT, LCD_PARAM_UNSET)
 #define lcdDisplayClear()          lcdCommand(LCD_CLEAR, LCD_PARAM_SET)
@@ -88,13 +96,13 @@ typedef enum {
 #endif
 
 typedef struct {
-    I2C_HandleTypeDef * hi2c;
-    uint8_t lines;
-    uint8_t columns;
-    uint8_t address;
-    uint8_t backlight;
-    uint8_t modeBits;
-    uint8_t entryBits;
+    I2C_HandleTypeDef * hi2c;  // I2C Struct
+    uint8_t lines;             // Lines of the display
+    uint8_t columns;           // Columns
+    uint8_t address;           // I2C address shifted left by 1
+    uint8_t backlight;         // Backlight
+    uint8_t modeBits;          // Display on/off control bits
+    uint8_t entryBits;         // Entry mode set bits
 } LCDParams;
 
 typedef enum {
@@ -116,7 +124,7 @@ typedef enum {
 
 
 bool lcdInit(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t lines, uint8_t rows);
-bool lcdCommand(uint8_t command, LCDParamsActions action);
+bool lcdCommand(LCDCommands command, LCDParamsActions action);
 bool lcdBacklight(uint8_t command);
 bool lcdSetCursorPosition(uint8_t line, uint8_t row);
 bool lcdPrintStr(uint8_t * data, uint8_t length);

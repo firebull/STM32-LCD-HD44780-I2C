@@ -18,7 +18,7 @@
  */
 
 /*
-    Hear are some cyrillic symbols that you can use in your code
+    Here are some cyrillic symbols that you can use in your code
 
     uint8_t symD[8]   = { 0x07, 0x09, 0x09, 0x09, 0x09, 0x1F, 0x11 }; // Д
     uint8_t symZH[8]  = { 0x11, 0x15, 0x15, 0x0E, 0x15, 0x15, 0x11 }; // Ж
@@ -71,45 +71,26 @@ bool lcdInit(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t lines, uint8_t co
     lcdCommandBuffer[1] = lcdCommandBuffer[0];
     lcdCommandBuffer[2] = (0x03 << 4);
 
-    /* First init cycle */
-    if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 3) != HAL_OK) {
-        return false;
+    /* First 3 steps of init cycles. They are the same. */
+    for (uint8_t i = 0; i < 3; ++i) {
+        if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 3) != HAL_OK) {
+            return false;
+        }
+
+        xLastWakeTime = xTaskGetTickCount();
+
+        while (HAL_I2C_GetState(lcdParams.hi2c) != HAL_I2C_STATE_READY) {
+            vTaskDelay(1);
+        }
+
+        if (i == 2) {
+            // For the last cycle delay is less then 1 ms (100us by datasheet)
+            vTaskDelayUntil(&xLastWakeTime, (TickType_t)1);
+        } else {
+            // For first 2 cycles delay is less then 5ms (4100us by datasheet)
+            vTaskDelayUntil(&xLastWakeTime, (TickType_t)5);
+        }
     }
-
-    xLastWakeTime = xTaskGetTickCount();
-
-    while (HAL_I2C_GetState(lcdParams.hi2c) != HAL_I2C_STATE_READY) {
-        vTaskDelay(1);
-    }
-
-    vTaskDelayUntil(&xLastWakeTime, (TickType_t)5);
-
-    /* Second init cycle */
-    if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 3) != HAL_OK) {
-        return false;
-    }
-
-    xLastWakeTime = xTaskGetTickCount();
-
-    while (HAL_I2C_GetState(lcdParams.hi2c) != HAL_I2C_STATE_READY) {
-        vTaskDelay(1);
-    }
-
-    vTaskDelayUntil(&xLastWakeTime, (TickType_t)5);
-
-
-    /* Third init cycle */
-    if (HAL_I2C_Master_Transmit_DMA(lcdParams.hi2c, lcdParams.address, (uint8_t*)lcdCommandBuffer, 3) != HAL_OK) {
-        return false;
-    }
-
-    xLastWakeTime = xTaskGetTickCount();
-
-    while (HAL_I2C_GetState(lcdParams.hi2c) != HAL_I2C_STATE_READY) {
-        vTaskDelay(1);
-    }
-
-    vTaskDelayUntil(&xLastWakeTime, (TickType_t)1);
 
     /* Lets turn to 4-bit at least */
     lcdCommandBuffer[0] = LCD_BIT_BACKIGHT_ON | LCD_BIT_E | (LCD_MODE_4BITS << 4);
@@ -153,7 +134,7 @@ bool lcdInit(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t lines, uint8_t co
  * @param  action   LCD_PARAM_SET or LCD_PARAM_UNSET
  * @return          true if success
  */
-bool lcdCommand(uint8_t command, LCDParamsActions action) {
+bool lcdCommand(LCDCommands command, LCDParamsActions action) {
     uint8_t lcdData = 0x00;
 
     /* First of all lest store the command */
@@ -161,7 +142,7 @@ bool lcdCommand(uint8_t command, LCDParamsActions action) {
         case LCD_PARAM_SET:
             switch (command) {
                 case LCD_DISPLAY:
-                    lcdParams.modeBits |= LCD_BIT_DISPLAY_ON;
+                    lcdParams.modeBits |=  LCD_BIT_DISPLAY_ON;
                     break;
 
                 case LCD_CURSOR:
@@ -174,11 +155,23 @@ bool lcdCommand(uint8_t command, LCDParamsActions action) {
 
                 case LCD_CLEAR:
                     lcdData = LCD_BIT_DISP_CLEAR;
-                    return lcdWriteByte((uint8_t)0x00, &lcdData);
+
+                    if (lcdWriteByte((uint8_t)0x00, &lcdData) == false) {
+                        return false;
+                    } else {
+                        vTaskDelay(2);
+                        return true;
+                    }
 
                 case LCD_CURSOR_HOME:
                     lcdData = LCD_BIT_CURSOR_HOME;
-                    return lcdWriteByte((uint8_t)0x00, &lcdData);
+
+                    if (lcdWriteByte((uint8_t)0x00, &lcdData) == false) {
+                        return false;
+                    } else {
+                        vTaskDelay(2);
+                        return true;
+                    }
 
                 case LCD_CURSOR_DIR_RIGHT:
                     lcdParams.entryBits |= LCD_BIT_CURSOR_DIR_RIGHT;
@@ -239,13 +232,13 @@ bool lcdCommand(uint8_t command, LCDParamsActions action) {
         case LCD_DISPLAY:
         case LCD_CURSOR:
         case LCD_CURSOR_BLINK:
-            lcdData = lcdParams.modeBits;
+            lcdData = LCD_BIT_DISPLAY_CONTROL | lcdParams.modeBits;
             break;
 
         case LCD_CURSOR_DIR_RIGHT:
         case LCD_CURSOR_DIR_LEFT:
         case LCD_DISPLAY_SHIFT:
-            lcdData = lcdParams.entryBits;
+            lcdData = LCD_BIT_ENTRY_MODE | lcdParams.entryBits;
             break;
 
         default:

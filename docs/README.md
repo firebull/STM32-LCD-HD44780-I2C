@@ -22,16 +22,20 @@ This libriary is for STM32 HAL and uses its functions and FreeRTOS. So first of 
 
 #### Turn on I2C
 PCF8574 supports only Standart 100kHz mode:
+
 ![Screenshot](http://blog.bulki.me/assets/img/stm32-lcd-hitachi/i2c-params.png)
 
 Turn on DMA:
+
 ![Screenshot](http://blog.bulki.me/assets/img/stm32-lcd-hitachi/i2c-dma.png)
 
 Turn on interrupts:
+
 ![Screenshot](http://blog.bulki.me/assets/img/stm32-lcd-hitachi/i2c-nvic.png)
 
 #### FreeRTOS
 Turn on FreeRTOS globally and include ```vTaskDelayUntil()``` function:
+
 ![Screenshot](http://blog.bulki.me/assets/img/stm32-lcd-hitachi/freertos_include_params.png)
 
 #### Include correct HAL Libriary
