@@ -34,42 +34,42 @@ extern "C" {
 
 #include "stm32f3xx_hal.h"
 
-#define LCD_BIT_RS             (uint8_t)0x01
-#define LCD_BIT_RW             (uint8_t)0x02
-#define LCD_BIT_E              (uint8_t)0x04
-#define LCD_BIT_BACKIGHT_ON    (uint8_t)0x08
-#define LCD_BIT_BACKIGHT_OFF   (uint8_t)0x00
+#define LCD_BIT_RS                 ((uint8_t)0x01U)
+#define LCD_BIT_RW                 ((uint8_t)0x02U)
+#define LCD_BIT_E                  ((uint8_t)0x04U)
+#define LCD_BIT_BACKIGHT_ON        ((uint8_t)0x08U)
+#define LCD_BIT_BACKIGHT_OFF       ((uint8_t)0x00U)
 
-#define LCD_MODE_4BITS         (uint8_t)0x02
-#define LCD_BIT_1LINE          (uint8_t)0x00
-#define LCD_BIT_2LINE          (uint8_t)0x08
-#define LCD_BIT_4LINE          LCD_BIT_2LINE
-#define LCD_BIT_5x8DOTS        (uint8_t)0x00
-#define LCD_BIT_5x10DOTS       (uint8_t)0x04
-#define LCD_BIT_SETCGRAMADDR   (uint8_t)0x40
-#define LCD_BIT_SETDDRAMADDR   (uint8_t)0x80
+#define LCD_MODE_4BITS             ((uint8_t)0x02U)
+#define LCD_BIT_1LINE              ((uint8_t)0x00U)
+#define LCD_BIT_2LINE              ((uint8_t)0x08U)
+#define LCD_BIT_4LINE              LCD_BIT_2LINE
+#define LCD_BIT_5x8DOTS            ((uint8_t)0x00U)
+#define LCD_BIT_5x10DOTS           ((uint8_t)0x04U)
+#define LCD_BIT_SETCGRAMADDR       ((uint8_t)0x40U)
+#define LCD_BIT_SETDDRAMADDR       ((uint8_t)0x80U)
 
-#define LCD_BIT_DISPLAY_CONTROL    (uint8_t)0x08
-#define LCD_BIT_DISPLAY_ON         (uint8_t)0x04
-#define LCD_BIT_CURSOR_ON          (uint8_t)0x02
-#define LCD_BIT_CURSOR_OFF         (uint8_t)0x00
-#define LCD_BIT_BLINK_ON           (uint8_t)0x01
-#define LCD_BIT_BLINK_OFF          (uint8_t)0x00
+#define LCD_BIT_DISPLAY_CONTROL    ((uint8_t)0x08U)
+#define LCD_BIT_DISPLAY_ON         ((uint8_t)0x04U)
+#define LCD_BIT_CURSOR_ON          ((uint8_t)0x02U)
+#define LCD_BIT_CURSOR_OFF         ((uint8_t)0x00U)
+#define LCD_BIT_BLINK_ON           ((uint8_t)0x01U)
+#define LCD_BIT_BLINK_OFF          ((uint8_t)0x00U)
 
-#define LCD_BIT_DISP_CLEAR         (uint8_t)0x01
-#define LCD_BIT_CURSOR_HOME        (uint8_t)0x02
+#define LCD_BIT_DISP_CLEAR         ((uint8_t)0x01U)
+#define LCD_BIT_CURSOR_HOME        ((uint8_t)0x02U)
 
-#define LCD_BIT_ENTRY_MODE         (uint8_t)0x04
-#define LCD_BIT_CURSOR_DIR_RIGHT   (uint8_t)0x02
-#define LCD_BIT_CURSOR_DIR_LEFT    (uint8_t)0x00
-#define LCD_BIT_DISPLAY_SHIFT      (uint8_t)0x01
+#define LCD_BIT_ENTRY_MODE         ((uint8_t)0x04U)
+#define LCD_BIT_CURSOR_DIR_RIGHT   ((uint8_t)0x02U)
+#define LCD_BIT_CURSOR_DIR_LEFT    ((uint8_t)0x00U)
+#define LCD_BIT_DISPLAY_SHIFT      ((uint8_t)0x01U)
 
 // TODO: Update commands with this defines
-#define LCD_BIT_CURSOR_SHIFT_MODE  (uint8_t)0x10
-#define LCD_BIT_CURSOR_DISP_SHIFT  (uint8_t)0x08
-#define LCD_BIT_CURSOR_MOVE        (uint8_t)0x00
-#define LCD_BIT_CURSOR_SHIFT_DIR_R (uint8_t)0x40
-#define LCD_BIT_CURSOR_SHIFT_DIR_L (uint8_t)0x00
+#define LCD_BIT_CURSOR_SHIFT_MODE  ((uint8_t)0x10U)
+#define LCD_BIT_CURSOR_DISP_SHIFT  ((uint8_t)0x08U)
+#define LCD_BIT_CURSOR_MOVE        ((uint8_t)0x00U)
+#define LCD_BIT_CURSOR_SHIFT_DIR_R ((uint8_t)0x40U)
+#define LCD_BIT_CURSOR_SHIFT_DIR_L ((uint8_t)0x00U)
 
 
 /* Function defines */
